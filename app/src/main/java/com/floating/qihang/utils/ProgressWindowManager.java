@@ -27,18 +27,23 @@ public class ProgressWindowManager {
        /* if (windowManager == null) {
             windowManager = (WindowManager)context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         }*/
-        windowManagerInstance(context);
+        //windowManagerInstance(context);
+        windowManager = (WindowManager)context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         /**
          * 注意每个View必须用自己的LayoutParams，不可以复用同一个；
          */
         standardParams = new WindowManager.LayoutParams();
         standardParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         standardParams.format = PixelFormat.RGBA_8888;
+        standardParams.setTitle("ist_floatball");
         // 设置标志,这个两个标志为了让就算出现了悬浮窗，不影响其他区域，只在悬浮窗的区域受干扰
         standardParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL |
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
                 WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH |
                 WindowManager.LayoutParams.FLAG_SPLIT_TOUCH;
+
+
+
         standardParams.x=locationX;
         standardParams.y = locationY;//初始的位置
         //坐标原点定位属性值（以屏幕左边正中间为坐标原点，往上坐标为负值，往下坐标为正值；例如要初始化view在屏幕左上角（standardParams.x=0；standardParams.y =-(1080/2)））

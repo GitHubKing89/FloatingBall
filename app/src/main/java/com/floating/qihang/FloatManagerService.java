@@ -96,7 +96,7 @@ public class FloatManagerService extends Service implements View.OnClickListener
         /**
          * add展开功能的view
          */
-        mExpandView = ProgressWindowManager.windowAddFixedSizeView(this, R.layout.expand_layout, 1800, 300);
+        mExpandView = ProgressWindowManager.windowAddFixedSizeView(this, R.layout.expand_layout, 0, 300);
         ImageView imageview = (ImageView) mExpandView.findViewById(R.id.expand_icon);
         //我们把功能实现放在另外一个类中
         ViewGroup viewGroup = (ViewGroup) mExpandView.findViewById(R.id.expand_ly);
@@ -105,12 +105,13 @@ public class FloatManagerService extends Service implements View.OnClickListener
             view.setOnClickListener(this);
         }
         imageview.setOnClickListener(this);
+        mExpandView.setOnTouchListener(this);
         //获取屏幕宽度
         mWidth=ProgressWindowManager.getDisplaySize(this)[0];
         /**
          * add移动小球的view
          */
-        mRootView = ProgressWindowManager.windowAddCommonView(this, R.layout.ball_layout, 1800, 300);
+        mRootView = ProgressWindowManager.windowAddCommonView(this, R.layout.ball_layout, 0, 300);
         mFloatBallIcon = (ImageView) mRootView.findViewById(R.id.ball_icon);
         mFloatBallIcon.setOnTouchListener(this);
         mFloatBallIcon.setOnClickListener(this);
@@ -195,13 +196,11 @@ public class FloatManagerService extends Service implements View.OnClickListener
             }
         }
 
-        //TODO======================================================
-        /**
-         * 问题：目前是没有触发该Action
-         */
         if (view.getId() == R.id.expand_ly) {
+            /**
+             * 点击局部view尺寸以外的位置会触发 ACTION_OUTSIDE
+             */
             if (event.getAction() == MotionEvent.ACTION_OUTSIDE) {
-                Log.e("MCH","-------------========ACTION_OUTSIDE=======--------------------------");
                 AnimatorUtils.floatBallClickChangedAnimator(mRootView,mExpandView,false);
                 isMoveFinish = false;
                 isRight = ProgressWindowManager.getViewLocationParams()[0] - (mWidth / 2 - mRootView.getWidth()) > 0;

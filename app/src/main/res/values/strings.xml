@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">FloatingBall</string>
+
+
+    <string name="hardware_check">白板</string>
+    <string name="mem_speed">文件管理</string>
+    <string name="apk_lock">操作说明</string>
+    <string name="system_lock">便签</string>
+    <string name="home">首页</string>
 </resources>

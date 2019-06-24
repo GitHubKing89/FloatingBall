@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/expand_ly"
+    android:layout_width="@dimen/dpi_390px"
+    android:layout_height="@dimen/dpi_390px"
+    android:descendantFocusability="afterDescendants"
+    android:clipChildren="false"
+    android:clickable="true"
+    android:splitMotionEvents="false"
+    android:background="@mipmap/circle_bg"
+    >
+
+    <FrameLayout
+        android:id="@+id/item_1_ly"
+        style="@style/expand_ly">
+        <ImageView
+            style="@style/expand_icon"
+            android:src="@mipmap/mem_up"/>
+        <com.floating.qihang.LoopText
+            style="@style/expand_text"
+            android:text="@string/mem_speed"/>
+    </FrameLayout>
+
+
+    <FrameLayout
+        android:id="@+id/item_2_ly"
+        style="@style/expand_ly">
+        <ImageView
+            style="@style/expand_icon"
+            android:src="@mipmap/hardware"/>
+        <com.floating.qihang.LoopText
+            style="@style/expand_text"
+            android:text="@string/hardware_check"/>
+    </FrameLayout>
+    <FrameLayout
+        android:id="@+id/item_3_ly"
+        style="@style/expand_ly">
+        <ImageView
+            style="@style/expand_icon"
+            android:src="@mipmap/apk_lock"/>
+        <com.floating.qihang.LoopText
+            style="@style/expand_text"
+            android:layout_marginLeft="3dp"
+            android:text="@string/apk_lock"/>
+    </FrameLayout>
+    <FrameLayout
+        android:id="@+id/item_4_ly"
+        style="@style/expand_ly">
+        <ImageView
+            style="@style/expand_icon"
+            android:src="@mipmap/screenlock"/>
+        <com.floating.qihang.LoopText
+            style="@style/expand_text"
+            android:text="@string/system_lock"/>
+    </FrameLayout>
+    <FrameLayout
+        android:id="@+id/item_5_ly"
+        style="@style/expand_ly">
+        <ImageView
+            style="@style/expand_icon"
+            android:src="@mipmap/home"/>
+        <com.floating.qihang.LoopText
+            style="@style/expand_text"
+            android:text="@string/home"/>
+    </FrameLayout>
+
+
+    <ImageView
+        android:id="@+id/expand_icon"
+        android:layout_width="@dimen/dpi_80px"
+        android:layout_height="@dimen/dpi_80px"
+        android:scaleType="fitXY"
+        android:layout_centerInParent="true"
+        android:clickable="true"
+        android:visibility="visible"
+        android:src="@mipmap/floatball"/>
+
+</RelativeLayout>

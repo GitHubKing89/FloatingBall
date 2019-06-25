@@ -22,6 +22,7 @@ import com.floating.qihang.R;
  */
 public class AnimatorUtils {
 
+    private static   ObjectAnimator mFloatBallanim = null;
 
     /**
      * 小球位置状态改变后监听一段时间是否有操作，
@@ -32,9 +33,10 @@ public class AnimatorUtils {
      * @param status
      */
     public static void floatBallLocationChangeAnimator(View view, boolean isRight, int status) {
+        if (mFloatBallanim!=null){
+            mFloatBallanim.cancel();
+        }
         if (view != null) {
-            view.clearAnimation();
-            ObjectAnimator mFloatBallanim;
             ImageView mFloatBallIcon = (ImageView) view.findViewById(R.id.ball_icon);
             if (view.isShown()) {
                 if (status == CustomerUtils.FLOAT_HIDE) {
@@ -56,6 +58,7 @@ public class AnimatorUtils {
                 }
                 mFloatBallanim.setInterpolator(new LinearInterpolator());
                 mFloatBallanim.start();
+
             }
         }
     }
@@ -73,7 +76,7 @@ public class AnimatorUtils {
             }
             if (floatView != null) {
                 if (floatView.isShown()) {
-                    alphaAnim(floatView, 1f, 0.3f, 30,true);
+                    alphaAnim(floatView, 1f, 0.3f, 30, true);
                 }
             }
             //mExpandImp.openView(mExpandView,mParamx,mParamy,mBallSize,windowManager);
@@ -85,13 +88,13 @@ public class AnimatorUtils {
             if (floatView != null) {
                 if (!floatView.isShown()) {
                     floatView.setVisibility(View.VISIBLE);
-                    alphaAnim(floatView, 0.3f, 1f, ANIMATION_TIME,false);
+                    alphaAnim(floatView, 0.3f, 1f, ANIMATION_TIME, false);
                 }
             }
             if (expandView != null) {
                 if (expandView.isShown()) {
                     //delayShowView(ANIMATION_TIME+30,mExpandView,View.GONE);
-                    alphaAnim(expandView, 1, 0.3f, ANIMATION_TIME + 30,true);
+                    alphaAnim(expandView, 1, 0.3f, ANIMATION_TIME + 30, true);
                 }
             }
         }
@@ -118,18 +121,23 @@ public class AnimatorUtils {
     }
 
 
-
     /**
      * 打开所有的子控件
      */
     public static void openViewAnimator(final View floatView, final View expandView, int paramx, int paramy, int ballSize, final boolean isExpand) {
+   /*     if (floatView != null) {
+            ImageView mFloatBallIcon = (ImageView) floatView.findViewById(R.id.ball_icon);
+            mFloatBallIcon.clearColorFilter();
+            mFloatBallIcon.clearAnimation();
+            floatView.clearAnimation();
+        }*/
         ViewGroup viewGroup = (ViewGroup) expandView.findViewById(R.id.expand_ly);
         if (viewGroup != null) {
             int count = viewGroup.getChildCount() - 1;
-              float degree = (float) (2 * Math.PI / count); // 360°/个数
+            float degree = (float) (2 * Math.PI / count); // 360°/个数
             WindowManager.LayoutParams params = (WindowManager.LayoutParams) viewGroup.getLayoutParams();
             int expandSize = expandView.getContext().getResources().getDimensionPixelSize(R.dimen.dpi_390px);
-            int radius = expandSize/3-10;//图标距离中位置的系数
+            int radius = expandSize / 3 - 10;//图标距离中位置的系数
             params.x = paramx - (expandSize - ballSize) / 2;//贴边的算法会有问题
             params.y = paramy;
             viewGroup.setLayoutParams(params);
@@ -147,7 +155,7 @@ public class AnimatorUtils {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    floatBallClickChangedAnimator(floatView,expandView,isExpand);
+                    floatBallClickChangedAnimator(floatView, expandView, isExpand);
                 }
             });
 
@@ -177,7 +185,7 @@ public class AnimatorUtils {
      * 扩展view的关闭效果
      */
     public static void closeViewAnimator(final View floatView, final View expandView, final boolean isExpand, final Handler handler) {
-        ViewGroup viewGroup = (ViewGroup) expandView.findViewById(R.id.expand_ly);
+        final ViewGroup viewGroup = (ViewGroup) expandView.findViewById(R.id.expand_ly);
 
         if (viewGroup != null) {
             int count = viewGroup.getChildCount() - 1;
@@ -193,7 +201,7 @@ public class AnimatorUtils {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    AnimatorUtils.floatBallClickChangedAnimator(floatView,expandView,isExpand);
+                    AnimatorUtils.floatBallClickChangedAnimator(floatView, expandView, isExpand);
                 }
             });
 
@@ -218,7 +226,8 @@ public class AnimatorUtils {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         super.onAnimationEnd(animation);
-                        //mCircleBgView.setBackgroundResource(R.mipmap.circle_bg);
+
+                        viewGroup.setBackgroundResource(R.mipmap.circle_bg);
                         view.setVisibility(View.GONE);
                         //3s内没操作
                         handler.removeMessages(CustomerUtils.START_TO_MOVE);

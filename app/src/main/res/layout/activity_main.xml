@@ -5,5 +5,19 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-
+<TextView
+    android:id="@+id/open"
+    android:layout_width="80dp"
+    android:layout_height="wrap_content"
+    android:textSize="22sp"
+    android:layout_marginLeft="15dp"
+    android:text="开"/>
+<TextView
+    android:id="@+id/close"
+    android:layout_width="80dp"
+    android:layout_height="wrap_content"
+    android:textSize="22sp"
+    android:layout_marginRight="15dp"
+    android:layout_alignParentRight="true"
+    android:text="关"/>
 </RelativeLayout>

@@ -2,12 +2,14 @@ package com.floating.qihang;
 
 import android.animation.ObjectAnimator;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +40,6 @@ public class FloatManagerService extends Service implements View.OnClickListener
                     if (msg.what == START_TO_MOVE) {
                         if (isRight) {
                             ProgressWindowManager.paramsInstance().x += MOVE_STEP;
-
                             if (ProgressWindowManager.paramsInstance().x >= mWidth - mRootView.getWidth()) {
                                 isMoveFinish = true;
                             }
@@ -47,9 +48,8 @@ public class FloatManagerService extends Service implements View.OnClickListener
                             if (ProgressWindowManager.paramsInstance().x <= 0) {
                                 isMoveFinish = true;
                             }
-
                         }
-                    ProgressWindowManager.updateViewLayoutLocationParams(mRootView);
+                           ProgressWindowManager.updateViewLayoutLocationParams(mRootView);
                         if (!isMoveFinish) {
                             mHandler.sendEmptyMessageDelayed(START_TO_MOVE, MOVE_TIME);
                         } else {
@@ -67,6 +67,7 @@ public class FloatManagerService extends Service implements View.OnClickListener
             }
         }
     };
+    private BroadcastReceiver stopServiceReceiver;
 
 
     @Nullable
@@ -79,13 +80,16 @@ public class FloatManagerService extends Service implements View.OnClickListener
     @Override
     public void onCreate() {
         super.onCreate();
+        registStopServiceReceiver();
         mBallSize = getResources().getDimensionPixelSize(R.dimen.dpi_80px);
-        addWindowView();
     }
 
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (mRootView==null){
+            addWindowView();
+        }
         mExpandView.setVisibility(View.GONE);
         return super.onStartCommand(intent, flags, startId);
     }
@@ -121,7 +125,6 @@ public class FloatManagerService extends Service implements View.OnClickListener
     @Override
     public void onClick(View view) {
         if (view.getId()==R.id.ball_icon){
-            Log.e("MCH","===onClick==="+"-------------mParamx-----------"+mParamx+"------mParamy------:"+mParamy);
             AnimatorUtils.openViewAnimator(mRootView,mExpandView,mParamx,mParamy,mBallSize,true);
             return;
         }else if (view.getId()==R.id.expand_icon){
@@ -155,6 +158,8 @@ public class FloatManagerService extends Service implements View.OnClickListener
     private long mDownTime;
     private int mParamx, mParamy;
     private int mWidth;
+    private boolean isRight = false;
+    private int mBallSize;
     @Override
     public boolean onTouch(View view, MotionEvent event) {
         if (view.getId() == R.id.ball_icon) {
@@ -163,8 +168,6 @@ public class FloatManagerService extends Service implements View.OnClickListener
                     mLastx =  event.getRawX();
                     mlasty =  event.getRawY();
                     int[] locationParams = ProgressWindowManager.getViewLocationParams();
-                    Log.e("MCH","====x===:"+locationParams[0]+"---y---===:"+locationParams[1]);
-                    Log.e("MCH","--------------------------------===:"+mLastx+"-----------y--------------===:"+mlasty);
                     mParamx = locationParams[0];
                     mParamy = locationParams[1];
                     mDownTime = System.currentTimeMillis();
@@ -175,8 +178,6 @@ public class FloatManagerService extends Service implements View.OnClickListener
                 case MotionEvent.ACTION_MOVE:
                     int dx = (int) (event.getRawX() - mLastx);
                     int dy = (int) (event.getRawY() - mlasty);
-                    Log.d("MCH","---------ACTION_MOVE-----====x===:"+ProgressWindowManager.getViewLocationParams()[0]+"-----------------y---===:"+ProgressWindowManager.getViewLocationParams()[1]);
-                    Log.d("MCH","------------------x--------------===:"+event.getRawX()+"-----------y--------------===:"+event.getRawY());
                     ProgressWindowManager.updateViewLayoutLocationParams(mRootView,dx+mParamx,dy+mParamy);
                     break;
                 case MotionEvent.ACTION_UP:
@@ -209,22 +210,35 @@ public class FloatManagerService extends Service implements View.OnClickListener
         return false;
     }
 
-    private boolean isRight = false;
-    /**
-     * 小球边沿的属性动画
-     * @param status
-     */
+    @Override
+    public void onDestroy() {
+        unregisterReceiver(stopServiceReceiver);
+        super.onDestroy();
+    }
 
     /**
-     * 展开动画
-     * @param isexpand
+     * 注册移除Window上添加的view的广播
      */
+    private void registStopServiceReceiver() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("com.floating.qihang.FloatManagerService");
+        stopServiceReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context ctx, Intent intent) {
+                if ("com.floating.qihang.FloatManagerService".equals(intent.getAction())){
+                    if (mExpandView!=null){
+                        ProgressWindowManager.windowManagerInstance(ctx).removeViewImmediate(mExpandView);
+                        mExpandView=null;
+                    }
+                    if (mRootView!=null){
+                        ProgressWindowManager.windowManagerInstance(ctx).removeViewImmediate(mRootView);
+                        mRootView=null;
+                    }
+                   stopSelf();
+                }
 
-    private int mBallSize;
-    private static final int ANIMATION_TIME = 300;
-
-    /**
-     * 这个类用来执行隐藏于显示的动画
-     */
-
+            }
+        };
+        registerReceiver(stopServiceReceiver, intentFilter);
+    }
 }
